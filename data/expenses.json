@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Apartment Rent",
+    "amount": 2500,
+    "category": "Housing",
+    "date": "2024-07-01"
+  },
+  {
+    "id": 2,
+    "title": "Electricity Bill",
+    "amount": 350,
+    "category": "Bills",
+    "date": "2024-07-05"
+  },
+  {
+    "id": 3,
+    "title": "Supermarket Groceries",
+    "amount": 800,
+    "category": "Food",
+    "date": "2024-07-10"
+  }
+]

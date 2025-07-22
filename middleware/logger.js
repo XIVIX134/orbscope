@@ -1,10 +1,11 @@
 // Middleware/logger.js
 
 /**
- * @desc    Logs the request method and URL to the console
+ * @desc    Logs the request method, URL, and a timestamp to the console
  */
 const logger = (req, res, next) => {
-  console.log(`${req.method} ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.protocol}://${req.get('host')}${req.originalUrl}`);
   // Call next() to pass control to the next middleware function in the stack
   next(); 
 };

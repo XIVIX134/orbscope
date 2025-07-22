@@ -14,7 +14,9 @@
   "author": "Asser",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mongoose": "^8.16.4",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

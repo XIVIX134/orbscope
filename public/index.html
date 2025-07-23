@@ -423,7 +423,7 @@
             
             const updateTotal = () => {
                 const total = allExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-                totalAmountEl.textContent = `$${total.toFixed(2)}`;
+                totalAmountEl.textContent = `${total.toFixed(2)} EGP`;
             };
 
             const fetchExpenses = async () => {
@@ -441,7 +441,7 @@
 
             const addExpenseToDOM = (expense) => {
                 const item = document.createElement('li');
-                item.setAttribute('data-id', expense.id);
+                item.setAttribute('data-id', expense._id);
                 item.innerHTML = `
                     <div class="expense-info">
                         <i class="${getCategoryIcon(expense.category)} category-icon"></i>
@@ -451,7 +451,7 @@
                         </div>
                     </div>
                     <div class="amount-group">
-                        <span class="expense-amount">$${expense.amount.toFixed(2)}</span>
+                        <span class="expense-amount">${expense.amount.toFixed(2)} EGP</span>
                         <button class="delete-btn"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -490,7 +490,7 @@
             const deleteExpense = async (id) => {
                 try {
                     await fetch(`http://localhost:3000/api/expenses/${id}`, { method: 'DELETE' });
-                    allExpenses = allExpenses.filter(expense => expense.id != id);
+                    allExpenses = allExpenses.filter(expense => expense._id != id);
                     document.querySelector(`[data-id='${id}']`).remove();
                     updateTotal();
                 } catch (err) {
@@ -517,7 +517,7 @@
                                 <div class="chart-bar-container">
                                     <div class="chart-bar" style="width: ${barWidth}%;"></div>
                                 </div>
-                                <span class="chart-amount">$${amount.toFixed(2)}</span>
+                                <span class="chart-amount">${amount.toFixed(2)} EGP</span>
                             </li>
                         `;
                     }
@@ -525,7 +525,7 @@
 
                     let summaryHtml = `
                         <div class="report-summary">
-                            <div class="summary-item">Total <strong>$${data.total.toFixed(2)}</strong></div>
+                            <div class="summary-item">Total <strong>${data.total.toFixed(2)} EGP</strong></div>
                             <div class="summary-item">Entries <strong>${data.count}</strong></div>
                         </div>
                     `;
@@ -551,8 +551,11 @@
                 expenseList.addEventListener('click', (e) => {
                     const deleteBtn = e.target.closest('.delete-btn');
                     if (deleteBtn) {
-                        const id = e.target.closest('li').dataset.id;
-                        deleteExpense(id);
+                        const li = deleteBtn.closest('li');
+                        if (li) {
+                            const id = li.dataset.id;
+                            deleteExpense(id);
+                        }
                     }
                 });
 

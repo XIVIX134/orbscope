@@ -6,8 +6,13 @@ const {
     getExpense,
     deleteExpense,
     updateExpense,
-    getMonthlyReport
+    getMonthlyReport,
+    getBudget,
+    setBudget
 } = require('../controller/expenseController');
+// Budget routes
+router.get('/budget', getBudget);
+router.post('/budget', setBudget);
 // Monthly report route
 router.get('/report/:year/:month', getMonthlyReport);
 

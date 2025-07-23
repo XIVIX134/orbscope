@@ -18,8 +18,10 @@
             --accent-primary: #BB86FC;
             --accent-secondary: #03DAC6;
             --danger-color: #CF6679;
+            --success-color: #66CF98;
         }
 
+        /* General Reset & Body Styles */
         * {
             margin: 0;
             padding: 0;
@@ -27,28 +29,42 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
-            background-size: 20px 20px;
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
+        font-family: 'Inter', sans-serif;
+        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+        background-size: 20px 20px;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Changed from flex-start to center */
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        background-color: var(--bg-color);
+    } 
+
+        /* Visually Hidden Class for Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
+        /* Main Container */
         .container {
             width: 100%;
-            max-width: 600px;
-            padding: 2.5rem;
+            max-width: 900px;
             background: var(--primary-glass);
             border-radius: 20px;
             border: 1px solid var(--border-color);
-            -webkit-backdrop-filter: blur(10px); /* Safari compatibility */
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 2rem;
         }
 
         header {
@@ -57,10 +73,8 @@
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -1px;
         }
 
         .total-expenses-container {
@@ -84,17 +98,38 @@
             font-weight: 700;
         }
 
+        /* Responsive Content Grid */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
         }
 
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .transactions-card, .report-card {
+                grid-column: span 2;
+            }
+        }
+         @media (min-width: 920px) {
+            .transactions-card {
+                grid-column: span 1;
+            }
+            .report-card {
+                grid-column: span 2;
+            }
+         }
+
+
         .card {
             background: var(--secondary-glass);
             padding: 1.5rem;
             border-radius: 12px;
             border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
         }
 
         .card h3 {
@@ -107,13 +142,14 @@
             gap: 0.5rem;
         }
 
-        #expense-form {
+        /* Form Styling */
+        .form-group {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
-        #expense-form input {
+        .form-group input {
             width: 100%;
             padding: 0.8rem 1rem;
             border: 1px solid var(--border-color);
@@ -124,14 +160,14 @@
             transition: all 0.3s ease;
         }
 
-        #expense-form input::placeholder { color: var(--text-secondary); opacity: 0.7; }
-        #expense-form input:focus {
+        .form-group input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+        .form-group input:focus-visible {
             outline: none;
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.2);
         }
 
-        #expense-form button {
+        .form-group button {
             padding: 0.8rem;
             border: none;
             border-radius: 8px;
@@ -141,42 +177,65 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        #expense-form button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
-        #expense-list { list-style: none; }
+        .form-group button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .form-group button:disabled { cursor: not-allowed; opacity: 0.7; }
+        .spinner {
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top: 2px solid #121212;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Expense List & Items */
+        #expense-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem; /* For scrollbar */
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         #expense-list li {
-            background-color: transparent;
-            padding: 1rem 0;
+            padding: 1rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: background-color 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            margin: -1rem 0; /* Counteract padding for hover effect */
         }
         #expense-list li:last-child { border-bottom: none; }
         #expense-list li:hover { background-color: var(--primary-glass); }
 
         .expense-info { display: flex; align-items: center; gap: 1rem; }
         .category-icon { font-size: 1.5rem; color: var(--accent-secondary); width: 30px; text-align: center; }
+        .description-group { display: flex; flex-direction: column; }
         .description-group .description { font-weight: 500; font-size: 1rem; }
         .description-group .category { font-size: 0.8rem; color: var(--text-secondary); }
         .amount-group { display: flex; align-items: center; gap: 1rem; }
-        .expense-amount { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .expense-amount { font-size: 1.1rem; font-weight: 600; }
         .delete-btn {
             background: none; border: none; color: var(--text-secondary);
-            cursor: pointer; font-size: 1rem; transition: all 0.3s ease; opacity: 0.5;
+            cursor: pointer; font-size: 1rem; transition: all 0.3s ease; opacity: 0;
+            padding: 0.5rem;
         }
         #expense-list li:hover .delete-btn { opacity: 1; }
         .delete-btn:hover { color: var(--danger-color); transform: scale(1.1); }
 
-        #report-form {
-            display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem;
-        }
+        /* Report Section */
+        #report-form { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
         #report-form input {
             padding: 0.5rem; background: var(--primary-glass); border-radius: 5px;
-            border: 1px solid var(--border-color); color: var(--text-primary);
+            border: 1px solid var(--border-color); color: var(--text-primary); width: 100px;
         }
         #report-form button {
             padding: 0.5rem 1rem; background: var(--accent-secondary); border: none;
@@ -192,379 +251,341 @@
         #report-chart { list-style: none; margin-top: 1rem; }
         .chart-item {
             display: grid; grid-template-columns: 100px 1fr 80px; align-items: center;
-            margin-bottom: 0.75rem; font-size: 0.9rem;
+            margin-bottom: 0.75rem; font-size: 0.9rem; gap: 1rem;
         }
         .chart-bar-container { background: var(--primary-glass); border-radius: 5px; height: 20px; overflow: hidden; }
         .chart-bar {
             background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
             height: 100%; border-radius: 5px;
-            transition: width 0.5s ease-in-out;
+            transition: width 0.5s ease-in-out; width: 0; /* Animate from 0 */
         }
-        .chart-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chart-amount { text-align: right; font-weight: 600; }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: #121212;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
     </style>
 </head>
 <body>
-
-    <div class="container">
+    <main class="container">
         <header>
             <h1>Expense Tracker</h1>
         </header>
 
         <div class="total-expenses-container">
             <h2>Total Expenses</h2>
-            <div id="total-amount">$0.00</div>
+            <div id="total-amount">0.00 EGP</div>
         </div>
 
         <div class="content-grid">
-            <div class="card">
+            <section class="card add-expense-card">
                 <h3><i class="fas fa-plus-circle"></i> Add New Expense</h3>
-                <form id="expense-form">
-                    <input type="text" id="description" placeholder="Expense Description" required>
-                    <input type="text" id="category" placeholder="Category (e.g., Food, Bills)" required>
-                    <input type="number" id="amount" placeholder="Amount" required min="0" step="0.01">
-                    <button type="submit"><i class="fas fa-plus"></i> Add Expense</button>
+                <form id="expense-form" class="form-group">
+                    <div>
+                        <label for="description" class="sr-only">Expense Description</label>
+                        <input type="text" id="description" placeholder="Expense Description" required>
+                    </div>
+                    <div>
+                        <label for="category" class="sr-only">Category</label>
+                        <input type="text" id="category" placeholder="Category (e.g., Food, Bills)" required>
+                    </div>
+                    <div>
+                        <label for="amount" class="sr-only">Amount</label>
+                        <input type="number" id="amount" placeholder="Amount" required min="0.01" step="0.01">
+                    </div>
+                    <button type="submit" id="add-expense-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Expense</span>
+                    </button>
                 </form>
-            </div>
+            </section>
 
-            <div class="card">
+            <section class="card transactions-card">
                 <h3><i class="fas fa-receipt"></i> Transactions</h3>
-                <ul id="expense-list"></ul>
-            </div>
+                <ul id="expense-list">
+                    </ul>
+            </section>
 
-            <div class="card">
+            <section class="card report-card">
                 <h3><i class="fas fa-chart-pie"></i> Monthly Report</h3>
                 <form id="report-form">
-                    <input type="number" id="report-year" min="2000" max="2100" aria-label="Report Year">
-                    <input type="number" id="report-month" min="1" max="12" aria-label="Report Month">
+                     <label for="report-month" class="sr-only">Report Month</label>
+                     <input type="number" id="report-month" min="1" max="12">
+                     <label for="report-year" class="sr-only">Report Year</label>
+                     <input type="number" id="report-year" min="2000" max="2100">
                     <button type="submit">View</button>
                 </form>
                 <div id="report-result"></div>
-            </div>
+            </section>
         </div>
-    </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const expenseForm = document.getElementById('expense-form');
-            const expenseList = document.getElementById('expense-list');
-            const totalAmountEl = document.getElementById('total-amount');
-            const reportForm = document.getElementById('report-form');
-            const reportYear = document.getElementById('report-year');
-            const reportMonth = document.getElementById('report-month');
-            const reportResult = document.getElementById('report-result');
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIG & DOM ELEMENTS ---
+        const API_BASE_URL = 'http://localhost:3000/api/expenses';
+        
+        const expenseForm = document.getElementById('expense-form');
+        const expenseList = document.getElementById('expense-list');
+        const totalAmountEl = document.getElementById('total-amount');
+        const reportForm = document.getElementById('report-form');
+        const reportYearEl = document.getElementById('report-year');
+        const reportMonthEl = document.getElementById('report-month');
+        const reportResultEl = document.getElementById('report-result');
+        const addExpenseBtn = document.getElementById('add-expense-btn');
+        const toastEl = document.getElementById('toast');
 
-            let allExpenses = [];
+        let allExpenses = []; // Local state
+        
+        // --- ICON MAPPING (Refactored for efficiency and scalability) ---
+        const categoryIconMap = new Map([
+            ['fas fa-utensils', ['food', 'grocer', 'restaurant', 'meal', 'طعام', 'أكل', 'مطعم']],
+            ['fas fa-file-invoice-dollar', ['bill', 'utility', 'rent', 'فاتورة', 'كهرباء', 'ايجار']],
+            ['fas fa-car', ['transport', 'taxi', 'uber', 'gas', 'fuel', 'مواصلات', 'بنزين']],
+            ['fas fa-shopping-bag', ['shopping', 'clothes', 'mall', 'تسوق', 'ملابس']],
+            ['fas fa-heartbeat', ['health', 'doctor', 'pharmacy', 'صحة', 'دكتور', 'صيدلية']],
+            ['fas fa-film', ['entertainment', 'movie', 'cinema', 'game', 'ترفيه', 'سينما']],
+            ['fas fa-plane', ['travel', 'flight', 'hotel', 'سفر', 'فندق']],
+            ['fas fa-graduation-cap', ['education', 'school', 'college', 'course', 'تعليم', 'مدرسة']],
+            ['fas fa-wifi', ['internet', 'wifi', 'انترنت', 'نت']],
+            ['fas fa-mobile-alt', ['phone', 'mobile', 'رصيد', 'موبايل']],
+            ['fas fa-tv', ['subscription', 'netflix', 'spotify', 'اشتراك']],
+            ['fas fa-tools', ['repair', 'maintenance', 'تصليح', 'صيانة']],
+            ['fas fa-gift', ['gift', 'present', 'هدية', 'هدايا']],
+            ['fas fa-paw', ['pet', 'cat', 'dog', 'حيوان', 'قطة', 'كلب']],
+            ['fas fa-ellipsis-h', ['misc', 'other', 'متنوع', 'اخرى']]
+        ]);
 
-            const getCategoryIcon = (category) => {
-                const cat = category.toLowerCase();
-                // Food & Groceries
-                if (
-                    cat.includes('food') || cat.includes('grocer') || cat.includes('grocery') || cat.includes('groceries') || cat.includes('supermarket') || cat.includes('market') || cat.includes('dining') || cat.includes('eat out') || cat.includes('eating out') || cat.includes('restaurant') || cat.includes('restaurants') || cat.includes('breakfast') || cat.includes('lunch') || cat.includes('dinner') || cat.includes('snack') || cat.includes('snacks') || cat.includes('meal') || cat.includes('meals') || cat.includes('takeout') || cat.includes('take away') || cat.includes('fast food') || cat.includes('cafe') || cat.includes('cafeteria') || cat.includes('bistro') || cat.includes('buffet') || cat.includes('food court') || cat.includes('bakery') || cat.includes('butcher') || cat.includes('delicatessen') || cat.includes('deli') || cat.includes('produce') || cat.includes('fruit') || cat.includes('vegetable') || cat.includes('veggie') || cat.includes('veggies') || cat.includes('farmers market') || cat.includes('farmers\' market') || cat.includes('organic') || cat.includes('whole foods') || cat.includes('shopping food') || cat.includes('shopping groceries') ||
-                    cat.includes('طعام') || cat.includes('مأكولات') || cat.includes('بقالة') || cat.includes('أكل') || cat.includes('أكل برا') || cat.includes('سوبر ماركت') || cat.includes('سوبرماركت') || cat.includes('عزومة') || cat.includes('عزومات') || cat.includes('مطعم') || cat.includes('مطاعم') || cat.includes('فطار') || cat.includes('غدا') || cat.includes('عشا')
-                ) return 'fas fa-utensils';
-                // Bills & Utilities
-                if (
-                    cat.includes('bill') || cat.includes('bills') || cat.includes('utility') || cat.includes('utilities') || cat.includes('electric') || cat.includes('electricity') || cat.includes('power') || cat.includes('hydro') || cat.includes('water') || cat.includes('gas') || cat.includes('heat') || cat.includes('heating') || cat.includes('cooling') || cat.includes('ac') || cat.includes('air conditioning') || cat.includes('energy') || cat.includes('sewage') || cat.includes('sewer') || cat.includes('trash') || cat.includes('garbage') || cat.includes('recycling') || cat.includes('waste') || cat.includes('utility bill') || cat.includes('phone bill') || cat.includes('internet bill') || cat.includes('tv bill') || cat.includes('cable bill') || cat.includes('rent bill') || cat.includes('mortgage bill') || cat.includes('hoa') || cat.includes('hoa fee') || cat.includes('hoa dues') ||
-                    cat.includes('فاتورة') || cat.includes('كهرباء') || cat.includes('ماء') || cat.includes('غاز') || cat.includes('نور') || cat.includes('مياه') || cat.includes('عداد') || cat.includes('صرف') || cat.includes('صرف صحي')
-                ) return 'fas fa-file-invoice-dollar';
-                // Transport
-                if (
-                    cat.includes('transport') || cat.includes('transportation') || cat.includes('commute') || cat.includes('commuting') || cat.includes('taxi') || cat.includes('cab') || cat.includes('uber') || cat.includes('lyft') || cat.includes('ride') || cat.includes('rideshare') || cat.includes('bus') || cat.includes('coach') || cat.includes('shuttle') || cat.includes('train') || cat.includes('rail') || cat.includes('subway') || cat.includes('metro') || cat.includes('tram') || cat.includes('trolley') || cat.includes('ferry') || cat.includes('car') || cat.includes('carpool') || cat.includes('car hire') || cat.includes('car rental') || cat.includes('vehicle') || cat.includes('motorbike') || cat.includes('motorcycle') || cat.includes('bike') || cat.includes('bicycle') || cat.includes('scooter') || cat.includes('parking') || cat.includes('gasoline') || cat.includes('petrol') || cat.includes('fuel') || cat.includes('auto') || cat.includes('automobile') || cat.includes('driving') || cat.includes('road trip') || cat.includes('roadtrip') ||
-                    cat.includes('مواصلات') || cat.includes('تاكسي') || cat.includes('باص') || cat.includes('قطار') || cat.includes('مترو') || cat.includes('مكروباص') || cat.includes('توك توك') || cat.includes('توك') || cat.includes('ركوبة') || cat.includes('ركوب') || cat.includes('مشوار')
-                ) return 'fas fa-car';
-                // Shopping
-                if (
-                    cat.includes('shopping') || cat.includes('shop') || cat.includes('buy') || cat.includes('purchase') || cat.includes('purchasing') || cat.includes('clothes') || cat.includes('clothing') || cat.includes('apparel') || cat.includes('mall') || cat.includes('boutique') || cat.includes('store') || cat.includes('retail') || cat.includes('outlet') || cat.includes('market') || cat.includes('bazaar') || cat.includes('superstore') || cat.includes('supercenter') || cat.includes('supercentre') || cat.includes('department store') || cat.includes('fashion') || cat.includes('shoes') || cat.includes('sneakers') || cat.includes('boots') || cat.includes('heels') || cat.includes('sandals') || cat.includes('bag') || cat.includes('bags') || cat.includes('purse') || cat.includes('wallet') || cat.includes('accessory') || cat.includes('accessories') || cat.includes('jewelry') || cat.includes('jewellery') || cat.includes('watch') || cat.includes('watches') || cat.includes('cosmetics') || cat.includes('makeup') || cat.includes('perfume') || cat.includes('fragrance') || cat.includes('gift shop') || cat.includes('gift store') ||
-                    cat.includes('تسوق') || cat.includes('ملابس') || cat.includes('مول') || cat.includes('هدوم') || cat.includes('جزم') || cat.includes('شنطة') || cat.includes('شنط') || cat.includes('اكسسوار') || cat.includes('اكسسوارات')
-                ) return 'fas fa-shopping-bag';
-                // Health
-                if (
-                    cat.includes('health') || cat.includes('doctor') || cat.includes('dr.') || cat.includes('dr ') || cat.includes('medicine') || cat.includes('meds') || cat.includes('medication') || cat.includes('pharmacy') || cat.includes('chemist') || cat.includes('drugstore') || cat.includes('hospital') || cat.includes('clinic') || cat.includes('dentist') || cat.includes('dental') || cat.includes('optician') || cat.includes('optometrist') || cat.includes('eye doctor') || cat.includes('checkup') || cat.includes('check up') || cat.includes('treatment') || cat.includes('therapy') || cat.includes('surgery') || cat.includes('operation') || cat.includes('scan') || cat.includes('xray') || cat.includes('x-ray') || cat.includes('test') || cat.includes('tests') || cat.includes('analysis') || cat.includes('analyses') || cat.includes('prescription') || cat.includes('rx') || cat.includes('insurance medical') || cat.includes('healthcare') || cat.includes('wellness') || cat.includes('fitness') || cat.includes('gym') || cat.includes('workout') || cat.includes('exercise') ||
-                    cat.includes('صحة') || cat.includes('طبيب') || cat.includes('دواء') || cat.includes('صيدلية') || cat.includes('مستشفى') || cat.includes('دكتور') || cat.includes('كشف') || cat.includes('علاج') || cat.includes('تحليل') || cat.includes('تحاليل') || cat.includes('اشعة') || cat.includes('أشعة')
-                ) return 'fas fa-heartbeat';
-                // Entertainment
-                if (
-                    cat.includes('entertainment') || cat.includes('entertai') || cat.includes('fun') || cat.includes('leisure') || cat.includes('movie') || cat.includes('movies') || cat.includes('cinema') || cat.includes('film') || cat.includes('theater') || cat.includes('theatre') || cat.includes('concert') || cat.includes('music') || cat.includes('musical') || cat.includes('show') || cat.includes('shows') || cat.includes('game') || cat.includes('games') || cat.includes('gaming') || cat.includes('arcade') || cat.includes('bowling') || cat.includes('billiards') || cat.includes('pool') || cat.includes('night out') || cat.includes('nightlife') || cat.includes('club') || cat.includes('clubs') || cat.includes('party') || cat.includes('parties') || cat.includes('event') || cat.includes('events') || cat.includes('outing') || cat.includes('hangout') || cat.includes('hang out') || cat.includes('festival') || cat.includes('festivals') || cat.includes('amusement') || cat.includes('park') || cat.includes('theme park') || cat.includes('water park') || cat.includes('zoo') || cat.includes('aquarium') || cat.includes('museum') || cat.includes('gallery') ||
-                    cat.includes('ترفيه') || cat.includes('سينما') || cat.includes('فيلم') || cat.includes('العاب') || cat.includes('موسيقى') || cat.includes('خروج') || cat.includes('فسحة') || cat.includes('خروجة') || cat.includes('حفلة') || cat.includes('حفلات')
-                ) return 'fas fa-film';
-                // Salary & Income
-                if (
-                    cat.includes('salary') || cat.includes('income') || cat.includes('paycheck') || cat.includes('راتب') || cat.includes('دخل') || cat.includes('مرتب') || cat.includes('قبض')
-                ) return 'fas fa-money-bill-wave';
-                // Gifts
-                if (
-                    cat.includes('gift') || cat.includes('present') || cat.includes('هدية') || cat.includes('هدايا') || cat.includes('عيدية')
-                ) return 'fas fa-gift';
-                // Travel
-                if (
-                    cat.includes('travel') || cat.includes('flight') || cat.includes('hotel') || cat.includes('trip') ||
-                    cat.includes('سفر') || cat.includes('رحلة') || cat.includes('فندق') || cat.includes('سياحة') || cat.includes('مصيف') || cat.includes('مشوار بعيد')
-                ) return 'fas fa-plane';
-                // Rent
-                if (
-                    cat.includes('rent') || cat.includes('lease') || cat.includes('ايجار') || cat.includes('إيجار') || cat.includes('شقة') || cat.includes('شقه') || cat.includes('ايجار شقة')
-                ) return 'fas fa-home';
-                // Pets
-                if (
-                    cat.includes('pet') || cat.includes('dog') || cat.includes('cat') || cat.includes('حيوان') || cat.includes('كلب') || cat.includes('قط') || cat.includes('حيوانات')
-                ) return 'fas fa-paw';
-                // Education
-                if (
-                    cat.includes('education') || cat.includes('school') || cat.includes('college') || cat.includes('university') || cat.includes('tuition') ||
-                    cat.includes('تعليم') || cat.includes('مدرسة') || cat.includes('جامعة') || cat.includes('دراسة') || cat.includes('دروس') || cat.includes('درس') || cat.includes('سنتر') || cat.includes('مصروف مدرسة')
-                ) return 'fas fa-graduation-cap';
-                // Insurance
-                if (
-                    cat.includes('insurance') || cat.includes('تأمين') || cat.includes('تأمين صحي')
-                ) return 'fas fa-shield-alt';
-                // Tax
-                if (
-                    cat.includes('tax') || cat.includes('ضريبة') || cat.includes('ضرائب')
-                ) return 'fas fa-receipt';
-                // Children
-                if (
-                    cat.includes('child') || cat.includes('baby') || cat.includes('kids') || cat.includes('طفل') || cat.includes('اطفال') || cat.includes('أطفال') || cat.includes('رضيع') || cat.includes('عيال') || cat.includes('عيالي')
-                ) return 'fas fa-baby';
-                // Internet
-                if (
-                    cat.includes('internet') || cat.includes('wifi') || cat.includes('انترنت') || cat.includes('واي فاي') || cat.includes('نت')
-                ) return 'fas fa-wifi';
-                // Phone
-                if (
-                    cat.includes('phone') || cat.includes('mobile') || cat.includes('cell') || cat.includes('جوال') || cat.includes('هاتف') || cat.includes('موبايل') || cat.includes('موبايلات') || cat.includes('رصيد')
-                ) return 'fas fa-mobile-alt';
-                // Investment
-                if (
-                    cat.includes('investment') || cat.includes('stock') || cat.includes('crypto') || cat.includes('استثمار') || cat.includes('اسهم') || cat.includes('عملات') || cat.includes('بورصة')
-                ) return 'fas fa-chart-line';
-                // Charity
-                if (
-                    cat.includes('charity') || cat.includes('donat') || cat.includes('تبرع') || cat.includes('صدقة') || cat.includes('زكاة')
-                ) return 'fas fa-hands-helping';
-                // Subscriptions
-                if (
-                    cat.includes('subscription') || cat.includes('netflix') || cat.includes('spotify') || cat.includes('prime') || cat.includes('اشتراك') || cat.includes('نتفليكس') || cat.includes('سبوتيفاي') || cat.includes('شاهد') || cat.includes('osn')
-                ) return 'fas fa-tv';
-                // Coffee & Drinks
-                if (
-                    cat.includes('coffee') || cat.includes('tea') || cat.includes('drink') || cat.includes('beverage') || cat.includes('قهوة') || cat.includes('شاي') || cat.includes('مشروب') || cat.includes('عصير') || cat.includes('نسكافيه') || cat.includes('كابتشينو')
-                ) return 'fas fa-coffee';
-                // Parking
-                if (
-                    cat.includes('parking') || cat.includes('موقف') || cat.includes('جراج')
-                ) return 'fas fa-parking';
-                // Repairs
-                if (
-                    cat.includes('repair') || cat.includes('maintenance') || cat.includes('تصليح') || cat.includes('صيانة') || cat.includes('ميكانيكي') || cat.includes('سمكري') || cat.includes('كهربائي')
-                ) return 'fas fa-tools';
-                // Furniture
-                if (
-                    cat.includes('furniture') || cat.includes('اثاث') || cat.includes('عفش') || cat.includes('موبيليا')
-                ) return 'fas fa-couch';
-                // Beauty
-                if (
-                    cat.includes('beauty') || cat.includes('salon') || cat.includes('spa') || cat.includes('تجميل') || cat.includes('صالون') || cat.includes('كوافير') || cat.includes('حلاقة')
-                ) return 'fas fa-spa';
-                // Party & Events
-                if (
-                    cat.includes('party') || cat.includes('event') || cat.includes('حفلة') || cat.includes('مناسبة') || cat.includes('فرح') || cat.includes('خطوبة')
-                ) return 'fas fa-glass-cheers';
-                // Books
-                if (
-                    cat.includes('book') || cat.includes('magazine') || cat.includes('كتاب') || cat.includes('مجلة') || cat.includes('كتب')
-                ) return 'fas fa-book';
-                // Hardware
-                if (
-                    cat.includes('hardware') || cat.includes('computer') || cat.includes('laptop') || cat.includes('كمبيوتر') || cat.includes('حاسوب') || cat.includes('لاب توب') || cat.includes('لاب')
-                ) return 'fas fa-laptop';
-                // Software
-                if (
-                    cat.includes('software') || cat.includes('app') || cat.includes('برنامج') || cat.includes('تطبيق') || cat.includes('برامج')
-                ) return 'fas fa-code';
-                // Office
-                if (
-                    cat.includes('office') || cat.includes('stationery') || cat.includes('مكتب') || cat.includes('قرطاسية') || cat.includes('ادوات مكتبية')
-                ) return 'fas fa-briefcase';
-                // Cleaning
-                if (
-                    cat.includes('cleaning') || cat.includes('تنظيف') || cat.includes('نضافة')
-                ) return 'fas fa-broom';
-                // Garden
-                if (
-                    cat.includes('garden') || cat.includes('plant') || cat.includes('حديقة') || cat.includes('نبات') || cat.includes('زرع')
-                ) return 'fas fa-seedling';
-                // Holiday
-                if (
-                    cat.includes('holiday') || cat.includes('vacation') || cat.includes('عطلة') || cat.includes('اجازة') || cat.includes('مصيف') || cat.includes('سفرية')
-                ) return 'fas fa-umbrella-beach';
-                // Alcohol
-                if (
-                    cat.includes('alcohol') || cat.includes('bar') || cat.includes('pub') || cat.includes('مشروبات كحولية') || cat.includes('بار') || cat.includes('خمور')
-                ) return 'fas fa-beer';
-                // Laundry
-                if (
-                    cat.includes('laundry') || cat.includes('غسيل') || cat.includes('مغسلة')
-                ) return 'fas fa-tshirt';
-                // Moving
-                if (
-                    cat.includes('moving') || cat.includes('انتقال') || cat.includes('نقل عفش')
-                ) return 'fas fa-truck-moving';
-                // Security
-                if (
-                    cat.includes('security') || cat.includes('حماية') || cat.includes('أمن') || cat.includes('سيكيوريتي')
-                ) return 'fas fa-lock';
-                // Miscellaneous
-                if (
-                    cat.includes('misc') || cat.includes('other') || cat.includes('متنوع') || cat.includes('اخرى') || cat.includes('أخرى') || cat.includes('حاجات تانية') || cat.includes('حاجة تانية')
-                ) return 'fas fa-ellipsis-h';
-                return 'fas fa-dollar-sign';
-            };
-            
-            const updateTotal = () => {
-                const total = allExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-                totalAmountEl.textContent = `${total.toFixed(2)} EGP`;
-            };
-
-            const fetchExpenses = async () => {
-                try {
-                    const res = await fetch('http://localhost:3000/api/expenses');
-                    allExpenses = await res.json();
-                    expenseList.innerHTML = '';
-                    allExpenses.forEach(expense => addExpenseToDOM(expense));
-                    updateTotal();
-                } catch (err) {
-                    console.error(err);
-                    expenseList.innerHTML = '<li>Could not fetch expenses.</li>';
+        const getCategoryIcon = (category) => {
+            const catLower = category.toLowerCase();
+            for (const [icon, keywords] of categoryIconMap.entries()) {
+                if (keywords.some(keyword => catLower.includes(keyword))) {
+                    return icon;
                 }
+            }
+            return 'fas fa-dollar-sign'; // Default icon
+        };
+
+        // --- UI & NOTIFICATION FUNCTIONS ---
+        const showToast = (message, type = 'success') => {
+            toastEl.textContent = message;
+            toastEl.className = `toast show ${type}`;
+            setTimeout(() => {
+                toastEl.className = toastEl.className.replace('show', '');
+            }, 3000);
+        };
+
+        const setLoadingState = (button, isLoading) => {
+            const span = button.querySelector('span');
+            if (isLoading) {
+                button.disabled = true;
+                span.innerHTML = '<div class="spinner"></div>';
+            } else {
+                button.disabled = false;
+                span.textContent = 'Add Expense';
+            }
+        };
+
+        // --- CORE LOGIC ---
+        const renderExpense = (expense) => {
+            const item = document.createElement('li');
+            item.setAttribute('data-id', expense._id);
+            item.innerHTML = `
+                <div class="expense-info">
+                    <i class="${getCategoryIcon(expense.category)} category-icon"></i>
+                    <div class="description-group">
+                        <span class="description">${expense.description}</span>
+                        <span class="category">${expense.category}</span>
+                    </div>
+                </div>
+                <div class="amount-group">
+                    <span class="expense-amount">${expense.amount.toFixed(2)} EGP</span>
+                    <button class="delete-btn" aria-label="Delete expense"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            expenseList.prepend(item);
+        };
+
+        const updateTotal = () => {
+            const total = allExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+            totalAmountEl.textContent = `${total.toFixed(2)} EGP`;
+        };
+        
+        const fetchAndRenderExpenses = async () => {
+            try {
+                const res = await fetch(API_BASE_URL);
+                if (!res.ok) throw new Error('Network response was not ok.');
+                allExpenses = await res.json();
+                expenseList.innerHTML = ''; // Clear list before rendering
+                allExpenses.forEach(renderExpense);
+                updateTotal();
+            } catch (err) {
+                console.error('Fetch Error:', err);
+                showToast('Could not fetch expenses.', 'error');
+            }
+        };
+        
+        const addExpense = async (e) => {
+            e.preventDefault();
+            const descriptionInput = document.getElementById('description');
+            const amountInput = document.getElementById('amount');
+            const categoryInput = document.getElementById('category');
+
+            if (!descriptionInput.value.trim() || !amountInput.value.trim() || !categoryInput.value.trim()) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            const newExpense = {
+                description: descriptionInput.value,
+                amount: +amountInput.value,
+                category: categoryInput.value
             };
 
-            const addExpenseToDOM = (expense) => {
-                const item = document.createElement('li');
-                item.setAttribute('data-id', expense._id);
-                item.innerHTML = `
-                    <div class="expense-info">
-                        <i class="${getCategoryIcon(expense.category)} category-icon"></i>
-                        <div class="description-group">
-                            <span class="description">${expense.description}</span>
-                            <span class="category">${expense.category}</span>
-                        </div>
-                    </div>
-                    <div class="amount-group">
-                        <span class="expense-amount">${expense.amount.toFixed(2)} EGP</span>
-                        <button class="delete-btn"><i class="fas fa-trash"></i></button>
+            setLoadingState(addExpenseBtn, true);
+            try {
+                const res = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newExpense)
+                });
+                if (!res.ok) throw new Error('Failed to add expense.');
+                const data = await res.json();
+                
+                allExpenses.unshift(data);
+                renderExpense(data);
+                updateTotal();
+                expenseForm.reset();
+                showToast('Expense added successfully!');
+
+                // Refresh the report after adding expense
+                fetchAndRenderReport(reportYearEl.value, reportMonthEl.value);
+            } catch (err) {
+                console.error('Add Expense Error:', err);
+                showToast(err.message, 'error');
+            } finally {
+                setLoadingState(addExpenseBtn, false);
+            }
+        };
+
+        const deleteExpense = async (id) => {
+            const originalExpenses = [...allExpenses];
+            // Optimistic UI update
+            allExpenses = allExpenses.filter(expense => expense._id !== id);
+            document.querySelector(`[data-id='${id}']`).remove();
+            updateTotal();
+            showToast('Expense deleted.');
+
+            // Refresh the report after deleting expense
+            fetchAndRenderReport(reportYearEl.value, reportMonthEl.value);
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete on server.');
+            } catch (err) {
+                console.error('Delete Error:', err);
+                showToast('Could not delete expense. Restoring.', 'error');
+                allExpenses = originalExpenses; // Revert state
+                expenseList.innerHTML = '';
+                allExpenses.forEach(renderExpense); // Re-render
+                updateTotal();
+                // Re-fetch the report after restoring state
+                fetchAndRenderReport(reportYearEl.value, reportMonthEl.value);
+            }
+        };
+
+        const fetchAndRenderReport = async (year, month) => {
+            reportResultEl.innerHTML = 'Loading report...';
+            try {
+                const res = await fetch(`${API_BASE_URL}/report/${year}/${month}`);
+                if (!res.ok) throw new Error('No data found for this period.');
+                const data = await res.json();
+                
+                const maxCategoryTotal = Math.max(...Object.values(data.byCategory).map(Number), 0);
+                
+                let chartHtml = '<ul id="report-chart">';
+                for (const [cat, amount] of Object.entries(data.byCategory)) {
+                    const barWidth = maxCategoryTotal > 0 ? (amount / maxCategoryTotal) * 100 : 0;
+                    chartHtml += `
+                        <li class="chart-item">
+                            <span class="chart-label">${cat}</span>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: ${barWidth}%;"></div>
+                            </div>
+                            <span class="chart-amount">${amount.toFixed(2)} EGP</span>
+                        </li>
+                    `;
+                }
+                chartHtml += '</ul>';
+
+                const summaryHtml = `
+                    <div class="report-summary">
+                        <div class="summary-item">Total <strong>${data.total.toFixed(2)} EGP</strong></div>
+                        <div class="summary-item">Entries <strong>${data.count}</strong></div>
                     </div>
                 `;
-                expenseList.prepend(item); // Use prepend to show newest first
-            };
-
-            const addExpense = async (e) => {
-                e.preventDefault();
-                const description = document.getElementById('description').value;
-                const amount = document.getElementById('amount').value;
-                const category = document.getElementById('category').value;
-
-                if (!description.trim() || !amount.trim() || !category.trim()) {
-                    alert('Please fill in all fields');
-                    return;
-                }
-
-                const newExpense = { description, amount: +amount, category };
-
-                try {
-                    const res = await fetch('http://localhost:3000/api/expenses', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(newExpense)
+                
+                reportResultEl.innerHTML = summaryHtml + chartHtml;
+                // Trigger bar animation
+                requestAnimationFrame(() => {
+                    document.querySelectorAll('.chart-bar').forEach(bar => {
+                        bar.style.width = bar.style.width; // This seems odd but it forces a reflow to start the animation
                     });
-                    const data = await res.json();
-                    allExpenses.unshift(data); // Add to start of array
-                    addExpenseToDOM(data);
-                    updateTotal();
-                    expenseForm.reset();
-                } catch (err) {
-                    console.error(err);
-                }
-            };
-
-            const deleteExpense = async (id) => {
-                try {
-                    await fetch(`http://localhost:3000/api/expenses/${id}`, { method: 'DELETE' });
-                    allExpenses = allExpenses.filter(expense => expense._id != id);
-                    document.querySelector(`[data-id='${id}']`).remove();
-                    updateTotal();
-                } catch (err) {
-                    console.error(err);
-                }
-            };
-            
-            const fetchReport = async (year, month) => {
-                reportResult.innerHTML = 'Loading...';
-                try {
-                    const res = await fetch(`http://localhost:3000/api/expenses/report/${year}/${month}`);
-                    if (!res.ok) throw new Error('No data');
-                    const data = await res.json();
-                    
-                    const maxCategoryTotal = Math.max(...Object.values(data.byCategory), 0);
-                    
-                    let chartHtml = '<ul id="report-chart">';
-                    for (const cat in data.byCategory) {
-                        const amount = data.byCategory[cat];
-                        const barWidth = maxCategoryTotal > 0 ? (amount / maxCategoryTotal) * 100 : 0;
-                        chartHtml += `
-                            <li class="chart-item">
-                                <span class="chart-label">${cat}</span>
-                                <div class="chart-bar-container">
-                                    <div class="chart-bar" style="width: ${barWidth}%;"></div>
-                                </div>
-                                <span class="chart-amount">${amount.toFixed(2)} EGP</span>
-                            </li>
-                        `;
-                    }
-                    chartHtml += '</ul>';
-
-                    let summaryHtml = `
-                        <div class="report-summary">
-                            <div class="summary-item">Total <strong>${data.total.toFixed(2)} EGP</strong></div>
-                            <div class="summary-item">Entries <strong>${data.count}</strong></div>
-                        </div>
-                    `;
-
-                    reportResult.innerHTML = summaryHtml + chartHtml;
-
-                } catch (err) {
-                    reportResult.innerHTML = '<span style="color:var(--danger-color)">No report data found for this month.</span>';
-                }
-            };
-            
-            const init = () => {
-                const now = new Date();
-                reportYear.value = now.getFullYear();
-                reportMonth.value = now.getMonth() + 1;
-
-                reportForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    fetchReport(reportYear.value, reportMonth.value);
                 });
 
-                expenseForm.addEventListener('submit', addExpense);
-                expenseList.addEventListener('click', (e) => {
-                    const deleteBtn = e.target.closest('.delete-btn');
-                    if (deleteBtn) {
-                        const li = deleteBtn.closest('li');
-                        if (li) {
-                            const id = li.dataset.id;
-                            deleteExpense(id);
-                        }
-                    }
-                });
+            } catch (err) {
+                console.error('Report Error:', err);
+                reportResultEl.innerHTML = `<span style="color:var(--danger-color)">${err.message}</span>`;
+            }
+        };
+        
+        // --- INITIALIZATION & EVENT LISTENERS ---
+        const init = () => {
+            const now = new Date();
+            reportYearEl.value = now.getFullYear();
+            reportMonthEl.value = now.getMonth() + 1;
 
-                fetchExpenses();
-                fetchReport(reportYear.value, reportMonth.value);
-            };
+            expenseForm.addEventListener('submit', addExpense);
+            reportForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                fetchAndRenderReport(reportYearEl.value, reportMonthEl.value);
+            });
 
-            init();
-        });
+            expenseList.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    const id = deleteBtn.closest('li').dataset.id;
+                    deleteExpense(id);
+                }
+            });
+
+            // Initial data fetch
+            fetchAndRenderExpenses();
+            fetchAndRenderReport(reportYearEl.value, reportMonthEl.value);
+        };
+
+        init();
+    });
     </script>
 </body>
 </html>

@@ -1,5 +1,7 @@
+/* Import Google Fonts for 'Inter' */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* Define CSS variables for colors and other common values */
 :root {
     --bg-color: #121212;
     --primary-glass: rgba(255, 255, 255, 0.05);
@@ -18,13 +20,14 @@ html {
     height: 100%;
 }
 
+/* Universal box-sizing and reset for margin/padding */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* --- FIXES APPLIED HERE --- */
+/* Body styles: font, background, text color, layout */
 body {
     font-family: 'Inter', sans-serif;
     background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
@@ -32,28 +35,27 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    /* Changed height to min-height to allow content to grow */
     min-height: 100vh; 
-    padding: 2rem 1rem; /* Added top/bottom padding for spacing */
+    padding: 2rem 1rem; 
     background-color: var(--bg-color);
-    /* Removed "overflow: hidden" to enable scrolling */
 }
 
+/* Visually hidden content for screen readers */
 .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-/* --- FIX APPLIED HERE --- */
+/* Main content container styling */
 .container {
     width: 100%;
     max-width: 1000px;
-    /* Removed "height: 100%" to let container size with its content */
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
+/* Header section styling */
 header {
     text-align: center;
 }
@@ -63,6 +65,7 @@ header h1 {
     font-weight: 700;
 }
 
+/* Styling for the total expenses display area */
 .total-expenses-container {
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     padding: 1.5rem; border-radius: 16px; text-align: center;
@@ -77,6 +80,7 @@ header h1 {
     font-size: 2.75rem; font-weight: 700;
 }
 
+/* Grid layout for main content sections */
 .content-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -85,12 +89,14 @@ header h1 {
     min-height: 0;
 }
 
+/* Responsive adjustments for content grid on larger screens */
 @media (min-width: 820px) {
     .content-grid {
         grid-template-columns: 1fr 1.2fr;
     }
 }
 
+/* General card styling for sections */
 .card {
     background: var(--primary-glass); padding: 1.5rem; border-radius: 16px;
     border: 1px solid var(--border-color); -webkit-backdrop-filter: blur(10px);
@@ -104,6 +110,7 @@ header h1 {
     display: flex; align-items: center; gap: 0.75rem;
 }
 
+/* Styling for form groups (input fields and buttons) */
 .form-group {
     display: flex; flex-direction: column; gap: 1.25rem;
 }
@@ -124,12 +131,14 @@ header h1 {
 .form-group button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 .form-group button:disabled { cursor: not-allowed; opacity: 0.7; transform: none; box-shadow: none; }
 
+/* Spinner animation for loading states */
 .spinner {
     border: 2px solid rgba(0, 0, 0, 0.3); border-top: 2px solid #121212;
     border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+/* Styling for the expense list */
 #expense-list {
     list-style: none;
     overflow-y: auto;
@@ -137,9 +146,11 @@ header h1 {
     padding-right: 0.5rem;
     margin-right: -0.5rem;
 }
+/* Scrollbar styling for expense list */
 #expense-list::-webkit-scrollbar { width: 6px; }
 #expense-list::-webkit-scrollbar-track { background: transparent; }
 #expense-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+/* Fade-in animation for list items */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 #expense-list li {
     padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;
@@ -154,6 +165,7 @@ header h1 {
 .description-group .category { font-size: 0.8rem; color: var(--text-secondary); }
 .amount-group { display: flex; align-items: center; gap: 1rem; }
 .expense-amount { font-size: 1.1rem; font-weight: 600; }
+/* Delete button styling for list items */
 .delete-btn {
     background: none; border: none; color: var(--text-secondary); cursor: pointer;
     font-size: 1rem; transition: all 0.3s ease; opacity: 0; padding: 0.5rem;
@@ -161,13 +173,16 @@ header h1 {
 #expense-list li:hover .delete-btn { opacity: 1; }
 .delete-btn:hover { color: var(--danger-color); transform: scale(1.1); }
 
+/* Monthly summary card styling */
 .summary-card { gap: 1.5rem; }
+/* Controls for month and year selection */
 #summary-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 #summary-controls select, #summary-controls input {
     padding: 0.75rem; background: var(--secondary-glass); border-radius: 8px;
     border: 1px solid var(--border-color); color: var(--text-primary);
 }
 
+/* Budget display area layout */
 #budget-display-area {
     display: flex;
     flex-direction: column;
@@ -176,6 +191,7 @@ header h1 {
     margin-top: 1rem;
 }
 
+/* Donut chart container styling */
 .progress-donut-container {
     position: relative;
     width: 180px;
@@ -185,6 +201,7 @@ header h1 {
     justify-content: center;
 }
 
+/* Donut chart SVG rotation */
 .progress-donut-svg {
     transform: rotate(-90deg);
     width: 100%;
@@ -192,6 +209,7 @@ header h1 {
     overflow: visible;
 }
 
+/* Donut chart path styling */
 .donut-track, .donut-fill {
     fill: none;
     stroke-width: 18;
@@ -201,6 +219,7 @@ header h1 {
     stroke: var(--secondary-glass);
 }
 
+/* Donut chart fill animation and color changes */
 .donut-fill {
     stroke-linecap: round;
     transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 1, 0.5, 1), stroke 0.5s ease;
@@ -209,6 +228,7 @@ header h1 {
 .donut-fill.medium { stroke: var(--warning-color); }
 .donut-fill.high { stroke: var(--danger-color); }
 
+/* Text overlay on the donut chart */
 .progress-donut-text {
     position: absolute;
     text-align: center;
@@ -225,6 +245,7 @@ header h1 {
     color: var(--text-secondary);
 }
 
+/* Layout for budget labels (spent, budget, remaining) */
 #budget-labels {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -247,6 +268,7 @@ header h1 {
     color: var(--text-primary);
 }
 
+/* Budget value display and edit input styling */
 #budget-value {
     cursor: pointer;
     border-bottom: 1px dashed var(--text-secondary);
@@ -263,8 +285,10 @@ header h1 {
      border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px;
 }
 
+/* Styling for negative remaining budget */
 #remaining-value.negative { color: var(--danger-color); }
 
+/* Category breakdown section styling */
 #category-breakdown {
     width: 100%;
     margin-top: 1.5rem;
@@ -274,6 +298,7 @@ header h1 {
 
 #category-breakdown h4 { font-weight: 500; color: var(--text-secondary); font-size: 1rem; margin-bottom: 1rem; }
 #category-chart { list-style: none; padding: 0; }
+/* Individual category chart item styling */
 .chart-item {
     display: grid;
     grid-template-columns: 120px 1fr 100px;
@@ -287,6 +312,7 @@ header h1 {
 .chart-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chart-amount { text-align: right; font-weight: 500; }
 
+/* Toast notification styling */
 .toast {
     position: fixed; bottom: 2rem; left: 50%; transform: translate(-50%, 20px); padding: 1rem 2rem;
     border-radius: 8px; color: #121212; font-weight: 600; z-index: 1000; opacity: 0;

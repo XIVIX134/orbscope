@@ -1,13 +1,8 @@
-// Middleware/logger.js
-
-/**
- * @desc    Logs the request method, URL, and a timestamp to the console
- */
+// This middleware logs information about incoming requests.
 const logger = (req, res, next) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] ${req.method} ${req.protocol}://${req.get('host')}${req.originalUrl}`);
-  // Call next() to pass control to the next middleware function in the stack
-  next(); 
+  next(); // Pass control to the next middleware or route handler
 };
 
 module.exports = logger;

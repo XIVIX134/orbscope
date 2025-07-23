@@ -1,9 +1,12 @@
-// --- Budget Additions ---
+// Core Node.js modules for file system and path manipulation
 const fs = require('fs');
 const path = require('path');
+// Import mongoose to access the Expense model
+const mongoose = require('mongoose');
+// Path to the budget data file
 const budgetFilePath = path.join(__dirname, '..', 'data', 'budget.json');
 
-// Helper to read budget
+// Reads the budget from the budget.json file.
 function readBudget() {
     if (!fs.existsSync(budgetFilePath)) return { budget: 0 };
     const data = fs.readFileSync(budgetFilePath);
@@ -15,20 +18,18 @@ function readBudget() {
     }
 }
 
-// Helper to write budget
+// Writes the budget to the budget.json file.
 function writeBudget(budgetObj) {
     fs.writeFileSync(budgetFilePath, JSON.stringify(budgetObj, null, 2));
 }
 
-// @desc    Get the budget
-// @route   GET /api/expenses/budget
+// GET /api/expenses/budget - Get the current budget
 const getBudget = (req, res) => {
     const data = readBudget();
     res.json(data);
 };
 
-// @desc    Set the budget
-// @route   POST /api/expenses/budget
+// POST /api/expenses/budget - Set the budget
 const setBudget = (req, res) => {
     const { budget } = req.body;
     if (budget === undefined) {
@@ -39,10 +40,10 @@ const setBudget = (req, res) => {
     res.status(200).json(budgetObj);
 };
 
-const Expense = require('../models/Expense');
+// Import the Expense Mongoose model
+const Expense = mongoose.model('Expense');
 
-// @desc    Gets all expenses
-// @route   GET /api/expenses
+// GET /api/expenses - Get all expenses
 const getExpenses = async (req, res) => {
     try {
         const expenses = await Expense.find().sort({ date: -1 });
@@ -52,8 +53,7 @@ const getExpenses = async (req, res) => {
     }
 };
 
-// @desc    Adds an expense
-// @route   POST /api/expenses
+// POST /api/expenses - Add a new expense
 const addExpense = async (req, res) => {
     try {
         const { description, amount, category, date } = req.body;
@@ -65,8 +65,7 @@ const addExpense = async (req, res) => {
     }
 };
 
-// @desc    Gets a single expense
-// @route   GET /api/expenses/:id
+// GET /api/expenses/:id - Get a single expense by ID
 const getExpense = async (req, res) => {
     try {
         const expense = await Expense.findById(req.params.id);
@@ -80,8 +79,7 @@ const getExpense = async (req, res) => {
     }
 };
 
-// @desc    Deletes an expense
-// @route   DELETE /api/expenses/:id
+// DELETE /api/expenses/:id - Delete an expense by ID
 const deleteExpense = async (req, res) => {
     try {
         const deleted = await Expense.findByIdAndDelete(req.params.id);
@@ -95,8 +93,7 @@ const deleteExpense = async (req, res) => {
     }
 };
 
-// @desc    Updates an expense
-// @route   PUT /api/expenses/:id
+// PUT /api/expenses/:id - Update an expense by ID
 const updateExpense = async (req, res) => {
     try {
         const { description, amount, category, date } = req.body;
@@ -115,24 +112,25 @@ const updateExpense = async (req, res) => {
     }
 };
 
-// @desc    Get monthly report
-// @route   GET /api/expenses/report/:year/:month
+// GET /api/expenses/report/:year/:month - Get monthly expense report
 const getMonthlyReport = async (req, res) => {
     const { year, month } = req.params;
     try {
+        // Define the start and end dates for the report month
         const start = new Date(year, month - 1, 1);
         const end = new Date(year, month, 1);
+        // Find expenses within the date range
         const filtered = await Expense.find({
             date: { $gte: start, $lt: end }
         });
-        // Group by category and sum amounts
+        // Aggregate expenses by category
         const report = {};
         filtered.forEach(e => {
             const cat = e.category || 'Uncategorized';
             if (!report[cat]) report[cat] = 0;
             report[cat] += Number(e.amount) || 0;
         });
-        // Read budget from file
+        // Get the budget amount
         let budget = 0;
         try {
             const budgetData = readBudget();
@@ -140,6 +138,7 @@ const getMonthlyReport = async (req, res) => {
         } catch {
             budget = 0;
         }
+        // Send back the report data
         res.json({
             year: parseInt(year),
             month: parseInt(month),
@@ -153,6 +152,7 @@ const getMonthlyReport = async (req, res) => {
     }
 };
 
+// Export all controller functions
 module.exports = {
     getExpenses,
     addExpense,
@@ -160,7 +160,6 @@ module.exports = {
     deleteExpense,
     updateExpense,
     getMonthlyReport,
-    // Budget additions
     getBudget,
     setBudget
 };

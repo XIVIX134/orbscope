@@ -4,21 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker | Modern</title>
+    <!-- Link to external CSS file -->
     <link rel="stylesheet" href="style.css">
+    <!-- Link to Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Main container for the application -->
     <main class="container">
+        <!-- Application header -->
         <header>
             <h1>Expense Tracker</h1>
         </header>
 
+        <!-- Displays total expenses accumulated over time -->
         <div class="total-expenses-container">
             <h2>All-Time Total Expenses</h2>
             <div id="total-amount">0.00 EGP</div>
         </div>
 
+        <!-- Grid for adding new expenses and showing recent transactions -->
         <div class="content-grid">
+            <!-- Section for adding new expenses -->
             <section class="card add-expense-card">
                 <h3><i class="fas fa-plus-circle"></i> Add New Expense</h3>
                 <form id="expense-form" class="form-group">
@@ -29,20 +36,25 @@
                 </form>
             </section>
 
+            <!-- Section for displaying recent transactions -->
             <section class="card transactions-card">
                 <h3><i class="fas fa-receipt"></i> Recent Transactions</h3>
                 <ul id="expense-list"></ul>
             </section>
         </div>
 
+        <!-- Monthly summary section including budget and category breakdown -->
         <section class="card summary-card">
             <h3><i class="fas fa-chart-pie"></i> Monthly Summary</h3>
+            <!-- Controls for selecting month and year for the summary -->
             <div id="summary-controls">
                 <label for="summary-month" class="sr-only">Month</label><select id="summary-month"></select>
                 <label for="summary-year" class="sr-only">Year</label><input type="number" id="summary-year" min="2000" max="2100">
             </div>
             
+            <!-- Area to display budget, spent, and remaining amounts with a donut chart -->
             <div id="budget-display-area">
+                <!-- Donut chart for budget progress -->
                 <div class="progress-donut-container">
                     <svg class="progress-donut-svg" viewBox="0 0 100 100">
                         <circle class="donut-track" cx="50" cy="50" r="42"></circle>
@@ -54,6 +66,7 @@
                     </div>
                 </div>
                 
+                <!-- Labels for spent, budget, and remaining amounts -->
                 <div id="budget-labels">
                     <div class="budget-label-item">
                         <span class="label-title">Spent</span>
@@ -63,6 +76,7 @@
                         <span class="label-title">Budget</span>
                         <span id="budget-value-display" class="label-value">
                             <span id="budget-value">0.00</span>
+                            <!-- Form for editing budget -->
                             <form id="budget-input-form">
                                 <input type="number" id="budget-input" step="0.01" min="0">
                             </form>
@@ -75,6 +89,7 @@
                 </div>
             </div>
 
+            <!-- Displays expenses broken down by category -->
             <div id="category-breakdown">
                 <h4>Category Breakdown</h4>
                 <ul id="category-chart"></ul>
@@ -82,8 +97,10 @@
         </section>
     </main>
 
+    <!-- Toast notification display area -->
     <div id="toast" class="toast"></div>
 
+    <!-- Link to main JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>

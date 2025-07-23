@@ -30,8 +30,16 @@ const ExpenseSchema = new mongoose.Schema({
 // Register the Expense model with Mongoose
 const Expense = mongoose.model('Expense', ExpenseSchema);
 
+// Define the schema for a Budget document (single monthly limit)
+const BudgetSchema = new mongoose.Schema({
+  limit: { type: Number, required: true },     // Monthly budget limit
+});
+
+// Register the Budget model with Mongoose
+const Budget = mongoose.model('Budget', BudgetSchema);
+
 // Import expense routes after the Expense model is defined
-const expenseRoutes = require('./routes/expenseRoutes');
+const apiRoutes = require('./routes/routes');
 
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());
@@ -44,7 +52,7 @@ app.use(logger);
 app.use(express.static('public'));
 
 // Use expense routes for API endpoints
-app.use('/api/expenses', expenseRoutes);
+app.use('/api', apiRoutes);
 
 // Define the port for the server to listen on
 const PORT = process.env.PORT || 3000;

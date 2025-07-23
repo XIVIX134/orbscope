@@ -1,45 +1,5 @@
-// Core Node.js modules for file system and path manipulation
-const fs = require('fs');
-const path = require('path');
 // Import mongoose to access the Expense model
 const mongoose = require('mongoose');
-// Path to the budget data file
-const budgetFilePath = path.join(__dirname, '..', 'data', 'budget.json');
-
-// Reads the budget from the budget.json file.
-function readBudget() {
-    if (!fs.existsSync(budgetFilePath)) return { budget: 0 };
-    const data = fs.readFileSync(budgetFilePath);
-    if (!data.length) return { budget: 0 };
-    try {
-        return JSON.parse(data);
-    } catch {
-        return { budget: 0 };
-    }
-}
-
-// Writes the budget to the budget.json file.
-function writeBudget(budgetObj) {
-    fs.writeFileSync(budgetFilePath, JSON.stringify(budgetObj, null, 2));
-}
-
-// GET /api/expenses/budget - Get the current budget
-const getBudget = (req, res) => {
-    const data = readBudget();
-    res.json(data);
-};
-
-// POST /api/expenses/budget - Set the budget
-const setBudget = (req, res) => {
-    const { budget } = req.body;
-    if (budget === undefined) {
-        return res.status(400).json({ message: 'Budget amount is required.' });
-    }
-    const budgetObj = { budget: parseFloat(budget) };
-    writeBudget(budgetObj);
-    res.status(200).json(budgetObj);
-};
-
 // Import the Expense Mongoose model
 const Expense = mongoose.model('Expense');
 
@@ -130,12 +90,13 @@ const getMonthlyReport = async (req, res) => {
             if (!report[cat]) report[cat] = 0;
             report[cat] += Number(e.amount) || 0;
         });
-        // Get the budget amount
+        // Get the budget amount from the database
         let budget = 0;
         try {
-            const budgetData = readBudget();
-            budget = typeof budgetData.budget === 'number' ? budgetData.budget : 0;
-        } catch {
+            const budgetData = await mongoose.model('Budget').findOne();
+            budget = budgetData ? budgetData.limit : 0;
+        } catch (e) {
+            console.error('Error fetching budget:', e);
             budget = 0;
         }
         // Send back the report data
@@ -159,7 +120,5 @@ module.exports = {
     getExpense,
     deleteExpense,
     updateExpense,
-    getMonthlyReport,
-    getBudget,
-    setBudget
+    getMonthlyReport
 };

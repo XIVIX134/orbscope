@@ -148,10 +148,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const year = summaryYearEl.value;
         const month = summaryMonthEl.value;
         try {
-            const res = await fetch(`${API_BASE_URL}/report/${year}/${month}`);
-            if (!res.ok) throw new Error('No data for this period.');
-            state.summary = await res.json();
-        } catch (err) { state.summary = { budget: 0, total: 0, byCategory: {} }; } // Reset summary on error
+            // Fetch expense summary
+            const expenseRes = await fetch(`${API_BASE_URL}/report/${year}/${month}`);
+            if (!expenseRes.ok) throw new Error('No expense data for this period.');
+            const expenseSummary = await expenseRes.json();
+
+            // Fetch global budget
+            const budgetRes = await fetch('/api/budgets'); // New endpoint for global budget
+            if (!budgetRes.ok) throw new Error('Failed to fetch budget.');
+            const budgetData = await budgetRes.json();
+            
+            state.summary = {
+                budget: budgetData.limit || 0, // Use the 'limit' field from the fetched budget
+                total: expenseSummary.total,
+                byCategory: expenseSummary.byCategory
+            };
+        } catch (err) { 
+            console.error(err);
+            state.summary = { budget: 0, total: 0, byCategory: {} }; 
+        } // Reset summary on error
         renderSummary();
     };
 
@@ -197,17 +212,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handles setting the budget amount
     const setBudget = async (newBudgetValue) => {
         const budget = parseFloat(newBudgetValue);
-        if (isNaN(budget) || budget < 0) return; // Validate budget input
+        if (isNaN(budget) || budget < 0) {
+            return showToast('Budget amount must be a non-negative number.', 'error');
+        }
+
         try {
-            await fetch(`${API_BASE_URL}/budget`, {
+            const res = await fetch('/api/budgets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ budget }),
+                body: JSON.stringify({ limit: budget }), // Send 'limit' instead of 'budget'
             });
-            state.summary.budget = budget; // Update local state
-            renderSummary(); // Re-render summary with new budget
+            
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to update budget.');
+            }
             showToast('Budget updated!', 'success');
-        } catch (error) { showToast('Failed to update budget.', 'error'); } // Show error toast
+            fetchSummary(); // Re-fetch summary to reflect changes
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
     };
     
     // Initialization function: sets up initial UI and event listeners
@@ -244,7 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
             isEditingBudget = true;
             budgetValueEl.style.display = 'none';
             budgetInputForm.style.display = 'inline-block';
-            budgetInput.value = state.summary.budget > 0 ? state.summary.budget : '';
+            
+            // Populate with current budget value if available
+            budgetInput.value = state.summary.budget > 0 ? state.summary.budget : ''; 
             budgetInput.focus();
             budgetInput.select();
         });
@@ -252,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Function to finalize budget editing
         const finishBudgetEdit = () => {
             if (!isEditingBudget) return;
-            setBudget(budgetInput.value);
+            setBudget(budgetInput.value); // Call setBudget with single value
             budgetInputForm.style.display = 'none';
             budgetValueEl.style.display = 'inline';
             isEditingBudget = false;
